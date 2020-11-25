@@ -10,28 +10,72 @@ namespace ZenitechCodingTask
         private const int STACK_CAPACITY = 5;
         private const int MAX_INPUT_VALUE = 1023;
         private readonly static Helpers helpers = new Helpers(MAX_INPUT_VALUE);
+
         static void Main(string[] args)
         {
             var stack = new List<BitArray>(STACK_CAPACITY);
 
-            Push(ref stack, 10);
-            Push(ref stack, 7);
+            Console.WriteLine("Enter one of the commands: Push <number>, Add, Pop, Sub");
+            Console.WriteLine("Enter Exit to stop");
 
-            Add(ref stack);
+            var isRunning = true;
 
-            Push(ref stack, 25);
+            while (isRunning)
+            {
+                var input = Console.ReadLine().ToLower();
 
-            Sub(ref stack);
+                if (input.Contains("exit"))
+                {
+                    isRunning = false;
+                }
+                else if (input.Contains("push"))
+                {
+                    string[] words = input.Split(' ');
+
+                    if(words.Length == 2 && Int32.TryParse(words[1], out int value))
+                    {
+                        Push(ref stack, value);
+                        helpers.PrintStackInInt(stack);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong input, example of push: 'Push 10'");
+                    }
+                }
+                else if (input == "pop")
+                {
+                    Pop(ref stack);
+                    helpers.PrintStackInInt(stack);
+                }
+                else if (input == "add")
+                {
+                    Add(ref stack);
+                    helpers.PrintStackInInt(stack);
+                }
+                else if (input == "sub")
+                {
+                    Sub(ref stack);
+                    helpers.PrintStackInInt(stack);
+                }
+                else
+                {
+                    Console.WriteLine("Entered command wasnt recognized");
+                }
+            }
         }
 
         private static void Push(ref List<BitArray> stack, int number)
         {
             if (stack.Count >= STACK_CAPACITY)
             {
-                throw new Exception("Stack limit reached");
+                Console.WriteLine("Stack limit reached");
+                return;
             }
 
-            helpers.CheckIfIntegerIsValid(number);
+            if (!helpers.CheckIfIntegerIsValid(number))
+            {
+                return;
+            }
 
             BitArray b = new BitArray(new int[] { number });
             bool[] bits = b.Cast<bool>().ToArray();
@@ -44,17 +88,15 @@ namespace ZenitechCodingTask
             }
 
             stack.Add(resultBitArray);
-            helpers.PrintStackInInt(stack);
         }
 
         private static BitArray Pop(ref List<BitArray> stack)
         {
             if (stack.Count > 0)
             {
-                var valueToRemove = stack[stack.Count - 1];
+                var valueToRemove = stack[^1];
                 stack.RemoveAt(stack.Count - 1);
 
-                helpers.PrintStackInInt(stack);
                 return valueToRemove;
             }
             return null;
@@ -69,15 +111,17 @@ namespace ZenitechCodingTask
 
                 var sum = helpers.ConvertBitArrayToInt(removedValue1) + helpers.ConvertBitArrayToInt(removedValue2);
 
-                helpers.CheckIfIntegerIsValid(sum);
+                if (!helpers.CheckIfIntegerIsValid(sum))
+                {
+                    return;
+                }
 
                 Push(ref stack, sum);
-                Console.Write(sum);
-                helpers.PrintStackInInt(stack);
+                Console.WriteLine("> " + sum.ToString());
             }
             else
             {
-                throw new ArgumentOutOfRangeException("Not enough values in stack");
+                Console.WriteLine("Stack does not have required operands");
             }
         }
 
@@ -101,8 +145,11 @@ namespace ZenitechCodingTask
                 {
                     Push(ref stack, result);
                 }
-                Console.Write(result);
-                helpers.PrintStackInInt(stack);
+                Console.WriteLine("> " + result.ToString());
+            }
+            else
+            {
+                Console.WriteLine("Stack does not have required operands");
             }
         }
     }

@@ -12,17 +12,6 @@ namespace ZenitechCodingTask
             MAX_INPUT_VALUE = maxValue;
         }
 
-        //public void PrintStack(List<BitArray> stack)
-        //{
-        //    foreach (var stackItem in stack)
-        //    {
-        //        stackItem.Cast<bool>().ToList().ForEach(y => Console.Write(y ? 1 : 0));
-        //        Console.Write($" {ConvertBitArrayToInt(stackItem)}");
-        //        Console.WriteLine("");
-        //    }
-        //    Console.WriteLine("");
-        //}
-
         public int ConvertBitArrayToInt(BitArray bitArray)
         {
             if (bitArray.Length > 32)
@@ -31,28 +20,44 @@ namespace ZenitechCodingTask
             int[] array = new int[1];
             bitArray.CopyTo(array, 0);
 
-            CheckIfIntegerIsValid(array[0]);
+            if (!CheckIfIntegerIsValid(array[0]))
+            {
+                throw new ArgumentException("Intenger is not valid");
+            }
 
             return array[0];
         }
 
         public void PrintStackInInt(List<BitArray> stack)
         {
-            string textToPrint = " stack is ";
-            foreach (var numberInBits in stack)
+            if(stack.Count == 0)
             {
-                textToPrint += ConvertBitArrayToInt(numberInBits) + ", ";
+                Console.WriteLine("Stack state: empty");
+                return;
             }
 
-            Console.Write(textToPrint + "\n");
+            string textToPrint = "Stack state: ";
+            for (var i = 0; i < stack.Count; i++)
+            {
+                textToPrint += ConvertBitArrayToInt(stack[i]);
+                if (i + 1 < stack.Count)
+                {
+                    textToPrint += ", ";
+                }
+            }
+
+            Console.WriteLine(textToPrint);
         }
 
-        public void CheckIfIntegerIsValid(int value)
+        public bool CheckIfIntegerIsValid(int value)
         {
             if (value < 0 || value > MAX_INPUT_VALUE)
             {
-                throw new ArgumentException("Invalid value");
+                Console.WriteLine("Error: Invalid value");
+                return false;
             }
+
+            return true;
         }
         public int GetModulo(int x, int N)
         {
